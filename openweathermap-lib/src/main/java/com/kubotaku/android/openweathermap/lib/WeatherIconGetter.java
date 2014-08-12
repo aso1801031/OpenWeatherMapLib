@@ -27,9 +27,13 @@ public class WeatherIconGetter {
                 conn.connect();
                 BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
                 Bitmap iconTmp = BitmapFactory.decodeStream(in);
-                icon = Bitmap.createScaledBitmap(iconTmp, iconSize, iconSize, true);
+                if (iconSize != 0) {
+                    icon = Bitmap.createScaledBitmap(iconTmp, iconSize, iconSize, true);
+                    iconTmp.recycle();
+                } else {
+                    icon = iconTmp;
+                }
                 in.close();
-                iconTmp.recycle();
                 conn.disconnect();
             } catch (IOException e) {
                 e.printStackTrace();

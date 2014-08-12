@@ -57,6 +57,7 @@ public class WeatherParser {
                     weathers[i] = parseWeather(obj);
                 }
             } else {
+                weathers = new WeatherInfo[1];
                 weathers[0] = parseWeather(rootObj);
             }
         } catch (JSONException e) {

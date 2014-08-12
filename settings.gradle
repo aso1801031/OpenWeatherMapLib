@@ -1,1 +1,1 @@
-include ':app', ':openweathermap-lib'
+include ':openweathermap-lib'

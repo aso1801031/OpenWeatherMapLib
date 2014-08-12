@@ -39,7 +39,7 @@ public class WeatherInfoDAO {
         }
     }
 
-    private static final String SQL_INSERT_STATEMENT = "insert into " + WeatherDBHelper.TABLE_NAME_WEATHER_INFO + "("
+    private static final String SQL_INSERT_STATEMENT = "insert into " + WeatherDBHelper.TABLE_NAME_WEATHER_INFO + " ("
             + WeatherDBHelper.COLUMN_NAME + ", "
             + WeatherDBHelper.COLUMN_POS_ID + ", "
             + WeatherDBHelper.COLUMN_LAT + ", "
@@ -56,10 +56,11 @@ public class WeatherInfoDAO {
             + WeatherDBHelper.COLUMN_TEMP + ", "
             + WeatherDBHelper.COLUMN_MAX_TEMP + ", "
             + WeatherDBHelper.COLUMN_MIN_TEMP + ", "
+            + WeatherDBHelper.COLUMN_PRESSURE + ", "
             + WeatherDBHelper.COLUMN_WIND_SPEED + ", "
             + WeatherDBHelper.COLUMN_WIND_DEG + ", "
-            + WeatherDBHelper.COLUMN_CLOUDS + ", "
-            + ") values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            + WeatherDBHelper.COLUMN_CLOUDS + ""
+            + ") values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     public long insert(final WeatherInfo info) {
         long ret = -1;
@@ -107,6 +108,8 @@ public class WeatherInfoDAO {
             + WeatherDBHelper.COLUMN_LAT + "=?, "
             + WeatherDBHelper.COLUMN_LON + "=?, "
             + WeatherDBHelper.COLUMN_WEATHER + "=?, "
+            + WeatherDBHelper.COLUMN_WEATHER_MAIN + "=?, "
+            + WeatherDBHelper.COLUMN_WEATHER_DESC + "=?, "
             + WeatherDBHelper.COLUMN_TIME + "=?, "
             + WeatherDBHelper.COLUMN_ICON_ID + "=?, "
             + WeatherDBHelper.COLUMN_ICON + "=?, "
@@ -116,9 +119,10 @@ public class WeatherInfoDAO {
             + WeatherDBHelper.COLUMN_TEMP + "=?, "
             + WeatherDBHelper.COLUMN_MAX_TEMP + "=?, "
             + WeatherDBHelper.COLUMN_MIN_TEMP + "=?, "
+            + WeatherDBHelper.COLUMN_PRESSURE + "=?, "
             + WeatherDBHelper.COLUMN_WIND_SPEED + "=?, "
             + WeatherDBHelper.COLUMN_WIND_DEG + "=?, "
-            + WeatherDBHelper.COLUMN_CLOUDS + "=?, "
+            + WeatherDBHelper.COLUMN_CLOUDS + "=? "
             + "where " + WeatherDBHelper.COLUMN_POS_ID +"=?;";
 
     public long update(final WeatherInfo info) {

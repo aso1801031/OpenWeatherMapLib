@@ -148,7 +148,7 @@ public class WeatherGetter implements IWeatherGetter {
 
         private String mRequestURL;
 
-        private boolean mNeedUpdate;
+        private boolean mNeedUpdate = false;
 
         public WeatherInfo getWeatherInfo() {
 
@@ -258,9 +258,9 @@ public class WeatherGetter implements IWeatherGetter {
             WeatherInfoDAO dao = new WeatherInfoDAO(dbHelper, mUpdateDistanceTime);
 
             if (mNeedUpdate) {
-                dao.insert(info);
-            } else {
                 dao.update(info);
+            } else {
+                dao.insert(info);
             }
 
             dao.close();

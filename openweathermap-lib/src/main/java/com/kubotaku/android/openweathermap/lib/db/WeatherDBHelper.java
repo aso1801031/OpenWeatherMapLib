@@ -14,7 +14,7 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
 
     public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_NAME = "_pos_name";
+    public static final String COLUMN_NAME = "pos_name";
     public static final String COLUMN_POS_ID = "pos_id";
     public static final String COLUMN_LAT = "latitude";
     public static final String COLUMN_LON = "longitude";
@@ -45,7 +45,7 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
 
     public static final int SNOW_FLAG_TRUE = 1;
 
-    private static final String SQL_CREATE_WEATHER_INFO_TABLE = "create table" + TABLE_NAME_WEATHER_INFO + " ("
+    private static final String SQL_CREATE_WEATHER_INFO_TABLE = "create table " + TABLE_NAME_WEATHER_INFO + " ("
             + COLUMN_ID + " integer primary key autoincrement, "
             + COLUMN_NAME + " text not null, "
             + COLUMN_POS_ID + " integer, "
@@ -66,7 +66,7 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
             + COLUMN_PRESSURE + " integer, "
             + COLUMN_WIND_SPEED + " real, "
             + COLUMN_WIND_DEG + " integer, "
-            + COLUMN_CLOUDS + " integer)";
+            + COLUMN_CLOUDS + " integer);";
 
     private static final String	SQL_DROP_WEATHER_INFO_TABLE = "drop table if exists " + TABLE_NAME_WEATHER_INFO;
 

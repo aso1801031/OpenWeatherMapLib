@@ -1,4 +1,4 @@
-package com.kubotaku.android.openweathermap.lib;
+package com.kubotaku.android.openweathermap.lib.test;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
