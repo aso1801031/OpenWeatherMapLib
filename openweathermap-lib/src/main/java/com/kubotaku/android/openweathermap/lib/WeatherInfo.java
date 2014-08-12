@@ -255,7 +255,7 @@ public class WeatherInfo {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Weather information :");
+        sb.append("Weather information :\n");
         sb.append("    time : " + mTime + "\n");
         sb.append("    city id : " + mId + "\n");
         sb.append("         name : " + mName + "\n");

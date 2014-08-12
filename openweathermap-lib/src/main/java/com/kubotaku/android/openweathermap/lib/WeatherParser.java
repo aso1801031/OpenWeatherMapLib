@@ -130,10 +130,8 @@ public class WeatherParser {
             }
 
             // Data receiving time, unix time
-            if (obj.has(KEY_DT)) {
-                long time = obj.getLong(KEY_DT);
-                weather.setTime(time);
-            }
+            long time = System.currentTimeMillis();
+            weather.setTime(time);
 
             // Weather
             if (obj.has(KEY_WEATHER)) {

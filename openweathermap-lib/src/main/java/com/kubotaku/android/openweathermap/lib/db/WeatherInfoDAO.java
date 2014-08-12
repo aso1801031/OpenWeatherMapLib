@@ -16,19 +16,24 @@ import java.io.ByteArrayOutputStream;
  */
 public class WeatherInfoDAO {
 
+    private static final long UPDATE_DISTANCE_TIME_DEFAULT = 10 * 60 * 1000;
+
+    /** Minimum distance time for Debug */
+    private static final long UPDATE_DISTANCE_TIME_MIN = 30 * 1000;
+
     private SQLiteDatabase mDB;
 
     private long mUpdateDistanceTime;
 
     public WeatherInfoDAO(WeatherDBHelper helper) {
         mDB = helper.getWritableDatabase();
-        mUpdateDistanceTime = UPDATE_DISTANCE_TIME;
+        mUpdateDistanceTime = UPDATE_DISTANCE_TIME_DEFAULT;
     }
 
     public WeatherInfoDAO(WeatherDBHelper helper, final long updateDistance) {
         this(helper);
 
-        if (updateDistance > UPDATE_DISTANCE_TIME) {
+        if (updateDistance > UPDATE_DISTANCE_TIME_MIN) {
             mUpdateDistanceTime = updateDistance;
         }
     }
@@ -266,8 +271,6 @@ public class WeatherInfoDAO {
         return exist;
     }
 
-    private static final long UPDATE_DISTANCE_TIME = 10 * 60 * 1000;
-
     public boolean needUpdate(final String name) {
         boolean needUpdate = true;
 
@@ -320,7 +323,9 @@ public class WeatherInfoDAO {
         info.setLatLng(latlng);
 
         info.setWeatherId(cur.getInt(cur.getColumnIndex(WeatherDBHelper.COLUMN_WEATHER)));
-        info.setTime(cur.getInt(cur.getColumnIndex(WeatherDBHelper.COLUMN_TIME)));
+        info.setWeatherMain(cur.getString(cur.getColumnIndex(WeatherDBHelper.COLUMN_WEATHER_MAIN)));
+        info.setWeatherDescription(cur.getString(cur.getColumnIndex(WeatherDBHelper.COLUMN_WEATHER_DESC)));
+        info.setTime(cur.getLong(cur.getColumnIndex(WeatherDBHelper.COLUMN_TIME)));
         info.setIconName(cur.getString(cur.getColumnIndex(WeatherDBHelper.COLUMN_ICON_ID)));
 
         byte[] bitmapBlob = cur.getBlob(cur.getColumnIndex(WeatherDBHelper.COLUMN_ICON));

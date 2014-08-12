@@ -150,6 +150,8 @@ public class WeatherGetter implements IWeatherGetter {
 
         private boolean mNeedUpdate = false;
 
+        private boolean mExistData = false;
+
         public WeatherInfo getWeatherInfo() {
 
             // First, check local database data
@@ -171,7 +173,7 @@ public class WeatherGetter implements IWeatherGetter {
 
             long now = System.currentTimeMillis();
             WeatherDBHelper dbHelper = new WeatherDBHelper(mContext);
-            WeatherInfoDAO dao = new WeatherInfoDAO(dbHelper);
+            WeatherInfoDAO dao = new WeatherInfoDAO(dbHelper, mUpdateDistanceTime);
 
             if (mLatLng != null) {
                 info = dao.findTargetInfo(mLatLng);
@@ -186,6 +188,7 @@ public class WeatherGetter implements IWeatherGetter {
             }
 
             if (info != null) {
+                mExistData = true;
                 if (dao.needUpdate(now, info)) {
                     info = null;
                     mNeedUpdate = true;
@@ -223,12 +226,13 @@ public class WeatherGetter implements IWeatherGetter {
 
                 if (mLatLng != null) {
                     info.setLatLng(mLatLng);
+                }
 
-                    // Get city name from coordinate for localize.
-                    String cityName = GeocodeUtil.pointToName(mContext, mLocale, mLatLng);
-                    if (cityName != null && cityName.length() != 0) {
-                        info.setName(cityName);
-                    }
+                // Get city name from coordinate for localize.
+                LatLng latlng = info.getLatLng();
+                String cityName = GeocodeUtil.pointToName(mContext, mLocale, latlng);
+                if (cityName != null && cityName.length() != 0) {
+                    info.setName(cityName);
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -255,12 +259,14 @@ public class WeatherGetter implements IWeatherGetter {
 
         private void saveLocal(final WeatherInfo info) {
             WeatherDBHelper dbHelper = new WeatherDBHelper(mContext);
-            WeatherInfoDAO dao = new WeatherInfoDAO(dbHelper, mUpdateDistanceTime);
+            WeatherInfoDAO dao = new WeatherInfoDAO(dbHelper);
 
             if (mNeedUpdate) {
                 dao.update(info);
             } else {
-                dao.insert(info);
+                if (!mExistData) {
+                    dao.insert(info);
+                }
             }
 
             dao.close();
