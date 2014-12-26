@@ -241,9 +241,13 @@ public class WeatherGetter implements IWeatherGetter {
                     info.setLatLng(mLatLng);
                 }
 
-                // Get city name from coordinate for localize.
-                LatLng latlng = info.getLatLng();
-                String cityName = GeocodeUtil.pointToName(mContext, mLocale, latlng);
+                String cityName = mName;
+                if (cityName == null) {
+                    // Get city name from coordinate for localize.
+                    LatLng latlng = info.getLatLng();
+                    cityName = GeocodeUtil.pointToName(mContext, mLocale, latlng);
+                }
+
                 if (cityName != null && cityName.length() != 0) {
                     info.setName(cityName);
                 }
