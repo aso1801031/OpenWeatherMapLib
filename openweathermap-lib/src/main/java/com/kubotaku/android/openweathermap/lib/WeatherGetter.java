@@ -3,6 +3,7 @@ package com.kubotaku.android.openweathermap.lib;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.kubotaku.android.openweathermap.lib.db.WeatherDBHelper;
 import com.kubotaku.android.openweathermap.lib.db.WeatherInfoDAO;
@@ -62,11 +63,14 @@ public class WeatherGetter implements IWeatherGetter {
 
     private long mUpdateDistanceTime;
 
+    private boolean mUseGeocodeForGetLocation;
+
     private WeatherGetter(final Context context, final String apiKey) {
         mContext = context;
         mApiKey = apiKey;
         mLocale = Locale.getDefault();
         mId = -1;
+        mUseGeocodeForGetLocation = false;
     }
 
     @Override
@@ -105,6 +109,11 @@ public class WeatherGetter implements IWeatherGetter {
     @Override
     public void setUpdateDistanceTime(long updateDistanceTime) {
         mUpdateDistanceTime = updateDistanceTime;
+    }
+
+    @Override
+    public void setUseGeocodeForGetLocation(boolean useGeocode) {
+        mUseGeocodeForGetLocation = useGeocode;
     }
 
     @Override
@@ -195,6 +204,10 @@ public class WeatherGetter implements IWeatherGetter {
                 }
             }
 
+            if (mExistData && !mNeedUpdate) {
+                Log.d(TAG, "Get weather info from local.");
+            }
+
             dao.close();
             return info;
         }
@@ -244,17 +257,28 @@ public class WeatherGetter implements IWeatherGetter {
         }
 
         private void createRequestURL() {
+            mRequestURL = null;
+
+            if ((mName != null) && mUseGeocodeForGetLocation) {
+                mLatLng = getLocationFromName(mName);
+            }
+
             if (mLatLng != null) {
                 mRequestURL = String.format(WEATHER_API, mLatLng.latitude, mLatLng.longitude, mApiKey);
             }
 
-            if (mName != null) {
+            if ((mRequestURL == null) && (mName != null)) {
                 mRequestURL = String.format(WEATHER_API_NAME, mName, mApiKey);
             }
 
-            if (mId != -1) {
+            if ((mRequestURL == null) && (mId != -1)) {
                 mRequestURL = String.format(WEATHER_API_ID, mId, mApiKey);
             }
+        }
+
+        private LatLng getLocationFromName(String name) {
+            LatLng latLng = GeocodeUtil.nameToPoint(mContext, mLocale, name);
+            return latLng;
         }
 
         private void saveLocal(final WeatherInfo info) {

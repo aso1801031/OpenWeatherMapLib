@@ -50,6 +50,12 @@ public class WeatherTest extends InstrumentationTestCase {
         testGetNewDataByName(weatherGetter);
     }
 
+    public void test001GetNewDataByNameToPoint() {
+        IWeatherGetter weatherGetter = getWeatherGetter();
+
+        testGetNewDataByNameToPoint(weatherGetter);
+    }
+
     public void test001GetNewDataById() {
         IWeatherGetter weatherGetter = getWeatherGetter();
 
@@ -139,6 +145,32 @@ public class WeatherTest extends InstrumentationTestCase {
         weatherGetter.setName("Ueda");
 
         weatherGetter.setEnableWeatherIcon(true);
+
+        mCountDownLatch = new CountDownLatch(1);
+
+        weatherGetter.getWeatherInfo(mOnWeatherGetListener);
+
+        try {
+            mCountDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        assertNotNull(mWeatherInfoList);
+
+        int infoCount = mWeatherInfoList.size();
+        assertEquals(infoCount, 1);
+
+        WeatherInfo info = mWeatherInfoList.get(0);
+        Log.d(TAG, info.toString());
+    }
+
+    private void testGetNewDataByNameToPoint(final IWeatherGetter weatherGetter) {
+        weatherGetter.setLocale(Locale.JAPAN);
+
+        weatherGetter.setName("上田市");
+
+        weatherGetter.setUseGeocodeForGetLocation(true);
 
         mCountDownLatch = new CountDownLatch(1);
 

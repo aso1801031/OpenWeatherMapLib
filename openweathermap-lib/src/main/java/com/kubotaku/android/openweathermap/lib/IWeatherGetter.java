@@ -29,6 +29,14 @@ public interface IWeatherGetter {
     void setName(final String name);
 
     /**
+     * Set flag use geocode class for location address by name.<br/>
+     * Name is set by {@link #setName(String)}
+     *
+     * @param useGeocode true : use geocode.
+     */
+    void setUseGeocodeForGetLocation(final boolean useGeocode);
+
+    /**
      * Set point id, you want to get weather information.
       * @param id
      */
