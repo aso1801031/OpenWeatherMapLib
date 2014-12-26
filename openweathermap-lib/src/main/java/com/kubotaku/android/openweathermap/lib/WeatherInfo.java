@@ -259,7 +259,11 @@ public class WeatherInfo {
         sb.append("    time : " + mTime + "\n");
         sb.append("    city id : " + mId + "\n");
         sb.append("         name : " + mName + "\n");
-        sb.append("         LatLng : " + mLatLng.toString() + "\n");
+        if (mLatLng != null) {
+            sb.append("         LatLng : " + mLatLng.toString() + "\n");
+        } else {
+            sb.append("         LatLng : null\n");
+        }
         sb.append("    temp(℃) : " + getCurrentTempCelsius() + "\n");
         sb.append("         max(℃) : " + getMaxTempCelsius() + "\n");
         sb.append("         min(℃) : " + getMinTempCelsius() + "\n");
