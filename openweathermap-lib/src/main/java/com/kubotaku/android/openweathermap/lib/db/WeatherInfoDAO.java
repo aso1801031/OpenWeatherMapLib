@@ -137,8 +137,16 @@ public class WeatherInfoDAO {
 
         statement.bindString(1, info.getName());
         statement.bindLong(2, info.getId());
-        statement.bindDouble(3, info.getLatLng().latitude);
-        statement.bindDouble(4, info.getLatLng().longitude);
+
+        double latitude = 0;
+        double longitude = 0;
+        if (info.getLatLng() != null) {
+            latitude = info.getLatLng().latitude;
+            longitude = info.getLatLng().longitude;
+        }
+        statement.bindDouble(3, latitude);
+        statement.bindDouble(4, longitude);
+
         statement.bindLong(5, info.getWeatherId());
         statement.bindString(6, info.getWeatherMain());
         statement.bindString(7, info.getWeatherDescription());
