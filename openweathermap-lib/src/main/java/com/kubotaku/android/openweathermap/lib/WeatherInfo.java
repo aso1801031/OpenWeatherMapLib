@@ -7,67 +7,118 @@ import android.graphics.Bitmap;
  */
 public class WeatherInfo {
 
-    /** for Kelvin to convert to Celsius */
+    /**
+     * for Kelvin to convert to Celsius
+     */
     private static final float BASE_TEMP = 273.15f;
 
-    /** City identification */
+    /**
+     * City identification
+     */
     private int mId;
 
-    /** City name */
+    /**
+     * City name
+     */
     private String mName;
 
-    /** Data receiving time, unix time, GMT */
+    /**
+     * Data receiving time, unix time, GMT
+     */
     private long mTime;
 
-    /** City geo location */
+    /**
+     * City geo location
+     */
     private LatLng mLatLng;
 
-    /** Temperature, Kelvin (subtract 273.15 to convert to Celsius) */
+    /**
+     * Temperature, Kelvin (subtract 273.15 to convert to Celsius)
+     */
     private float mCurrentTemp;
 
-    /** Minimum temperature at the moment.  */
+    /**
+     * Minimum temperature at the moment.
+     */
     private float mMinTemp;
 
-    /** Maximum temperature at the moment.  */
+    /**
+     * Maximum temperature at the moment.
+     */
     private float mMaxTemp;
 
-    /** Atmospheric pressure, hPa */
+    /**
+     * Atmospheric pressure, hPa
+     */
     private int mPressure;
 
-    /** Humidity, % */
+    /**
+     * Humidity, %
+     */
     private int mHumidity;
 
-    /** Weather condition id */
+    /**
+     * Weather condition id
+     */
     private int mWeatherId;
 
-    /** Group of weather parameters (Rain, Snow, Extreme etc.) */
+    /**
+     * Group of weather parameters (Rain, Snow, Extreme etc.)
+     */
     private String mWeatherMain;
 
-    /** Weather condition within the group */
+    /**
+     * Weather condition within the group
+     */
     private String mWeatherDescription;
 
-    /** Weather icon id */
+    /**
+     * Weather icon id
+     */
     private String mIconName;
 
-    /** Weather icon Bitmap */
+    /**
+     * Weather icon Bitmap
+     */
     private Bitmap mIcon;
 
-    /** Precipitation volume for last 3 hours, mm */
+    /**
+     * Precipitation volume for last 3 hours, mm
+     */
     private float mRain;
 
-    /** Snow volume for last 3 hours, mm */
+    /**
+     * Snow volume for last 3 hours, mm
+     */
     private boolean mIsSnow;
 
-    /** Wind speed, mps */
+    /**
+     * Wind speed, mps
+     */
     private float mWindSpeed;
 
-    /** Wind direction, degrees (meteorological) */
+    /**
+     * Wind direction, degrees (meteorological)
+     */
     private int mWindDeg;
 
-    /** Cloudiness, % */
+    /**
+     * Cloudiness, %
+     */
     private int mClouds;
 
+    /**
+     * Weather forecast date.
+     */
     private String mForecastDate;
+
+    /**
+     * Weather forecast type.
+     *
+     * @see {@link com.kubotaku.android.openweathermap.lib.IForecastGetter#FORECAST_TYPE_DAILY}
+     * @see {@link com.kubotaku.android.openweathermap.lib.IForecastGetter#FORECAST_TYPE_3HOUR}
+     */
+    private int mForecastType;
 
     private String mUrl;
 
@@ -173,6 +224,14 @@ public class WeatherInfo {
 
     public void setForecastDate(String forecastDate) {
         this.mForecastDate = forecastDate;
+    }
+
+    public int getForecastType() {
+        return mForecastType;
+    }
+
+    public void setForecastType(final int type) {
+        mForecastType = type;
     }
 
     public String getUrl() {

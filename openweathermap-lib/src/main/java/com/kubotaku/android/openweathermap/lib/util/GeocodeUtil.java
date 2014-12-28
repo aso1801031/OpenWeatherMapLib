@@ -19,8 +19,8 @@ public class GeocodeUtil {
      * Get location name from Address.
      *
      * @param context Context.
-     * @param locale Locale.
-     * @param latlng Address.
+     * @param locale  Locale.
+     * @param latlng  Address.
      * @return Location name of target address.
      */
     public static String pointToName(final Context context, final Locale locale, final LatLng latlng) {
@@ -63,8 +63,8 @@ public class GeocodeUtil {
      * Get location address from target location name.
      *
      * @param context Context.
-     * @param locale Locale.
-     * @param name Location name.
+     * @param locale  Locale.
+     * @param name    Location name.
      * @return Location address.
      */
     public static LatLng nameToPoint(final Context context, final Locale locale, final String name) {

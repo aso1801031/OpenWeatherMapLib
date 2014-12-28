@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class WeatherDBHelper extends SQLiteOpenHelper {
 
+    public static final String DB_WEATHER_INFO = "weather.db";
+
     public static final String TABLE_NAME_WEATHER_INFO = "weather_info";
 
     private static final int DB_VERSION = 1;
@@ -68,10 +70,10 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
             + COLUMN_WIND_DEG + " integer, "
             + COLUMN_CLOUDS + " integer);";
 
-    private static final String	SQL_DROP_WEATHER_INFO_TABLE = "drop table if exists " + TABLE_NAME_WEATHER_INFO;
+    private static final String SQL_DROP_WEATHER_INFO_TABLE = "drop table if exists " + TABLE_NAME_WEATHER_INFO;
 
     public WeatherDBHelper(final Context context) {
-        super(context, TABLE_NAME_WEATHER_INFO, null, DB_VERSION);
+        super(context, DB_WEATHER_INFO, null, DB_VERSION);
     }
 
     @Override

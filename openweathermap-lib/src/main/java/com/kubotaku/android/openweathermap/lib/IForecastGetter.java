@@ -1,12 +1,21 @@
 package com.kubotaku.android.openweathermap.lib;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
- * Weather Info Access Interface
+ * Weather Forecast Access Interface.
  */
-public interface IWeatherGetter {
+public interface IForecastGetter {
+
+    /**
+     * Forecast type : daily weather forecast up to 16 days(Default)
+     */
+    public static final int FORECAST_TYPE_DAILY = 0;
+
+    /**
+     * Forecast type : weather forecast for 5 days with data every 3 hours
+     */
+    public static final int FORECAST_TYPE_3HOUR = 1;
 
     /**
      * Set locale info.
@@ -68,26 +77,28 @@ public interface IWeatherGetter {
     void setUpdateDistanceTime(final long updateDistanceTime);
 
     /**
-     * Set region, you want to get weather information.
-     * You may use {@link #getWeatherInfo(int, com.kubotaku.android.openweathermap.lib.OnWeatherGetListener)}.
+     * Set weather forecast type you can get.
      *
-     * @param northeast
-     * @param southwest
+     * @param type
+     * @see {@link #FORECAST_TYPE_3HOUR}
+     * @see {@link #FORECAST_TYPE_DAILY}
      */
-    void setRegion(final LatLng northeast, final LatLng southwest);
+    void setForecastType(final int type);
 
     /**
-     * Get current weather information, you will set point.
+     * Set limit of daily count(default is 7).
+     * <p/>
+     * Only enable if {@link #setForecastType(int)} is set {@link #FORECAST_TYPE_DAILY}.
+     * <p/>
      *
-     * @param listener listener.
+     * @param count
      */
-    void getWeatherInfo(OnWeatherGetListener listener);
+    void setDailyCount(final int count);
 
     /**
-     * Get current weather information, you will set point.
+     * Get forecast of you will set point.
      *
-     * @param count    get information count.
-     * @param listener listener.
+     * @param listener
      */
-    void getWeatherInfo(final int count, OnWeatherGetListener listener);
+    void getForecast(OnForecastGetListener listener);
 }

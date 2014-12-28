@@ -18,7 +18,9 @@ public class WeatherInfoDAO {
 
     private static final long UPDATE_DISTANCE_TIME_DEFAULT = 10 * 60 * 1000;
 
-    /** Minimum distance time for Debug */
+    /**
+     * Minimum distance time for Debug
+     */
     private static final long UPDATE_DISTANCE_TIME_MIN = 30 * 1000;
 
     private SQLiteDatabase mDB;
@@ -74,8 +76,15 @@ public class WeatherInfoDAO {
 
         statement.bindString(1, info.getName());
         statement.bindLong(2, info.getId());
-        statement.bindDouble(3, info.getLatLng().latitude);
-        statement.bindDouble(4, info.getLatLng().longitude);
+
+        double latitude = 0;
+        double longitude = 0;
+        if (info.getLatLng() != null) {
+            latitude = info.getLatLng().latitude;
+            longitude = info.getLatLng().longitude;
+        }
+        statement.bindDouble(3, latitude);
+        statement.bindDouble(4, longitude);
         statement.bindLong(5, info.getWeatherId());
         statement.bindString(6, info.getWeatherMain());
         statement.bindString(7, info.getWeatherDescription());
@@ -84,7 +93,7 @@ public class WeatherInfoDAO {
 
         Bitmap icon = info.getIcon();
         if (icon != null) {
-            byte[] iconBlob = convertBitmapToBlob(icon);
+            byte[] iconBlob = DBUtil.convertBitmapToBlob(icon);
             statement.bindBlob(10, iconBlob);
         }
 
@@ -128,7 +137,7 @@ public class WeatherInfoDAO {
             + WeatherDBHelper.COLUMN_WIND_SPEED + "=?, "
             + WeatherDBHelper.COLUMN_WIND_DEG + "=?, "
             + WeatherDBHelper.COLUMN_CLOUDS + "=? "
-            + "where " + WeatherDBHelper.COLUMN_POS_ID +"=?;";
+            + "where " + WeatherDBHelper.COLUMN_POS_ID + "=?;";
 
     public long update(final WeatherInfo info) {
         long ret = -1;
@@ -155,7 +164,7 @@ public class WeatherInfoDAO {
 
         Bitmap icon = info.getIcon();
         if (icon != null) {
-            byte[] iconBlob = convertBitmapToBlob(icon);
+            byte[] iconBlob = DBUtil.convertBitmapToBlob(icon);
             statement.bindBlob(10, iconBlob);
         }
 
@@ -236,8 +245,7 @@ public class WeatherInfoDAO {
             if (cur.moveToNext()) {
                 info = parseWeatherInfo(cur);
             }
-        }
-        finally {
+        } finally {
             if (cur != null) {
                 cur.close();
             }
@@ -320,7 +328,7 @@ public class WeatherInfoDAO {
         return needUpdate;
     }
 
-    private WeatherInfo parseWeatherInfo(Cursor cur) {
+    public static WeatherInfo parseWeatherInfo(Cursor cur) {
         WeatherInfo info = new WeatherInfo();
         info.setId(cur.getInt(cur.getColumnIndex(WeatherDBHelper.COLUMN_POS_ID)));
         info.setName(cur.getString(cur.getColumnIndex(WeatherDBHelper.COLUMN_NAME)));
@@ -337,7 +345,7 @@ public class WeatherInfoDAO {
         info.setIconName(cur.getString(cur.getColumnIndex(WeatherDBHelper.COLUMN_ICON_ID)));
 
         byte[] bitmapBlob = cur.getBlob(cur.getColumnIndex(WeatherDBHelper.COLUMN_ICON));
-        Bitmap icon = convertBlobToBitmap(bitmapBlob);
+        Bitmap icon = DBUtil.convertBlobToBitmap(bitmapBlob);
         info.setIcon(icon);
 
         info.setRain(cur.getInt(cur.getColumnIndex(WeatherDBHelper.COLUMN_RAIN)));
@@ -356,23 +364,5 @@ public class WeatherInfoDAO {
         info.setClouds(cur.getInt(cur.getColumnIndex(WeatherDBHelper.COLUMN_CLOUDS)));
 
         return info;
-    }
-
-    private static Bitmap convertBlobToBitmap(final byte[] blob) {
-        Bitmap bitmap = null;
-        if (blob != null) {
-            BitmapFactory.decodeByteArray(blob, 0, blob.length);
-        }
-        return bitmap;
-    }
-
-    private static byte[] convertBitmapToBlob(final Bitmap bitmap) {
-        byte[] blob = null;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        if (bitmap.compress(Bitmap.CompressFormat.PNG, 100,
-                byteArrayOutputStream)) {
-            blob = byteArrayOutputStream.toByteArray();
-        }
-        return blob;
     }
 }

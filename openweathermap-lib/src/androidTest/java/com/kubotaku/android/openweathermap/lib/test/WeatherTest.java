@@ -269,7 +269,7 @@ public class WeatherTest extends InstrumentationTestCase {
 
     private ArrayList<WeatherInfo> mWeatherInfoList;
 
-    OnWeatherGetListener mOnWeatherGetListener = new OnWeatherGetListener() {
+    private OnWeatherGetListener mOnWeatherGetListener = new OnWeatherGetListener() {
         @Override
         public void onGetWeatherInfo(ArrayList<WeatherInfo> weatherInfo) {
             if (mWeatherInfoList != null) {

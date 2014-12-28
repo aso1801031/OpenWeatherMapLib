@@ -16,12 +16,13 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * Weather Getter class.
- * <p>
- *
+ * <p/>
+ * <p/>
  * <p/>
  */
 public class WeatherGetter implements IWeatherGetter {
@@ -35,6 +36,10 @@ public class WeatherGetter implements IWeatherGetter {
 
         if (apiKey.isEmpty()) {
             throw new Exception("API Key is must set.");
+        }
+
+        if (context == null) {
+            throw new Exception("Context is must set.");
         }
 
         IWeatherGetter instance = new WeatherGetter(context, apiKey);
@@ -70,6 +75,7 @@ public class WeatherGetter implements IWeatherGetter {
         mApiKey = apiKey;
         mLocale = Locale.getDefault();
         mId = -1;
+        mEnableWeatherIcon = false;
         mUseGeocodeForGetLocation = false;
     }
 
@@ -140,19 +146,29 @@ public class WeatherGetter implements IWeatherGetter {
 
 
     private class WeatherGetterImpl {
-        /** API */
+        /**
+         * API
+         */
         private static final String WEATHER_API = "http://api.openweathermap.org/data/2.5/weather?lat=%1$f&lon=%2$f&APPID=%3$s";
 
-        /** API by id */
+        /**
+         * API by id
+         */
         private static final String WEATHER_API_ID = "http://api.openweathermap.org/data/2.5/weather?id=%1$d&APPID=%2$s";
 
-        /** API by name */
+        /**
+         * API by name
+         */
         private static final String WEATHER_API_NAME = "http://api.openweathermap.org/data/2.5/weather?q=%1$s&APPID=%2$s";
 
-        /** API find target position */
+        /**
+         * API find target position
+         */
         private static final String WEATHER_API_FIND = "http://api.openweathermap.org/data/2.5/find?lat=%1$f&lon=%2$f&cnt=%3$d&APPID=%4$s";
 
-        /** API use bbox */
+        /**
+         * API use bbox
+         */
         private static final String WEAHTER_API_REGION = "http://api.openweathermap.org/data/2.5/city?bbox=%1$f,%2$f,%3$f,%4$f,%5$d&APPID=%6$s";
 
         private String mRequestURL;
@@ -166,6 +182,7 @@ public class WeatherGetter implements IWeatherGetter {
             // First, check local database data
             WeatherInfo info = getWeatherInfoFromLocal();
             if (info == null) {
+                // If don't exist on database, so get from service.
                 info = getWeatherInfoFromService();
             }
 
@@ -229,27 +246,32 @@ public class WeatherGetter implements IWeatherGetter {
                 String data = sb.toString();
 
                 // Parse Weather info form JSON format
-                info = WeatherParser.parseWeather(data)[0];
-
-                // Get weather icon from service.
-                if (mEnableWeatherIcon) {
-                    Bitmap icon = WeatherIconGetter.getWeatherIcon(info.getIconName(), mWeatherIconSize);
-                    info.setIcon(icon);
+                List<WeatherInfo> infoList = WeatherParser.parseWeather(data);
+                if ((infoList != null) && (infoList.size() != 0)) {
+                    info = infoList.get(0);
                 }
 
-                if (mLatLng != null) {
-                    info.setLatLng(mLatLng);
-                }
+                if (info != null) {
+                    // Get weather icon from service.
+                    if (mEnableWeatherIcon) {
+                        Bitmap icon = WeatherIconGetter.getWeatherIcon(info.getIconName(), mWeatherIconSize);
+                        info.setIcon(icon);
+                    }
 
-                String cityName = mName;
-                if (cityName == null) {
-                    // Get city name from coordinate for localize.
-                    LatLng latlng = info.getLatLng();
-                    cityName = GeocodeUtil.pointToName(mContext, mLocale, latlng);
-                }
+                    if (mLatLng != null) {
+                        info.setLatLng(mLatLng);
+                    }
 
-                if (cityName != null && cityName.length() != 0) {
-                    info.setName(cityName);
+                    String cityName = mName;
+                    if (cityName == null) {
+                        // Get city name from coordinate for localize.
+                        LatLng latlng = info.getLatLng();
+                        cityName = GeocodeUtil.pointToName(mContext, mLocale, latlng);
+                    }
+
+                    if (cityName != null && cityName.length() != 0) {
+                        info.setName(cityName);
+                    }
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
