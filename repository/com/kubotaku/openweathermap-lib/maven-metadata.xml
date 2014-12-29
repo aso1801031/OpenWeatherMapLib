@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.kubotaku</groupId>
+  <artifactId>openweathermap-lib</artifactId>
+  <version>0.1.0</version>
+  <versioning>
+    <versions>
+      <version>0.1.0</version>
+    </versions>
+    <lastUpdated>20141229063411</lastUpdated>
+  </versioning>
+</metadata>
