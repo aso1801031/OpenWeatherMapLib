@@ -266,7 +266,7 @@ public class WeatherGetter implements IWeatherGetter {
                     if (cityName == null) {
                         // Get city name from coordinate for localize.
                         LatLng latlng = info.getLatLng();
-                        cityName = GeocodeUtil.pointToName(mContext, mLocale, latlng);
+                        cityName = GeocodeUtil.pointToName(mLocale, latlng);
                     }
 
                     if (cityName != null && cityName.length() != 0) {
@@ -303,7 +303,7 @@ public class WeatherGetter implements IWeatherGetter {
         }
 
         private LatLng getLocationFromName(String name) {
-            LatLng latLng = GeocodeUtil.nameToPoint(mContext, mLocale, name);
+            LatLng latLng = GeocodeUtil.nameToPoint( mLocale, name);
             return latLng;
         }
 

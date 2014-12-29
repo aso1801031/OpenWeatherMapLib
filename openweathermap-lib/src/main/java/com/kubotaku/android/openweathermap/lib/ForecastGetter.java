@@ -266,7 +266,7 @@ public class ForecastGetter implements IForecastGetter {
                     if (cityName == null) {
                         // Get city name from coordinate for localize.
                         LatLng latlng = dailyForecast.getLatLng();
-                        convertedCityName = GeocodeUtil.pointToName(mContext, mLocale, latlng);
+                        convertedCityName = GeocodeUtil.pointToName(mLocale, latlng);
                         cityName = convertedCityName;
                     }
 
@@ -320,7 +320,7 @@ public class ForecastGetter implements IForecastGetter {
         }
 
         private LatLng getLocationFromName(String name) {
-            LatLng latLng = GeocodeUtil.nameToPoint(mContext, mLocale, name);
+            LatLng latLng = GeocodeUtil.nameToPoint(mLocale, name);
             return latLng;
         }
 
