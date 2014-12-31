@@ -45,16 +45,44 @@ public class ForecastTest extends InstrumentationTestCase {
     public void test001GetNewDataByGeoLocation() {
         IForecastGetter forecastGetter = getForecastGetter();
 
-        testGetNewDataByGeoLocation(forecastGetter);
+        testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_DAILY);
+        testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_3HOUR);
     }
 
     public void test002GetAlreadyExistData() {
         IForecastGetter forecastGetter = getForecastGetter();
 
-        testGetNewDataByGeoLocation(forecastGetter);
+        testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_DAILY);
         List<WeatherInfo> initialData = new ArrayList<WeatherInfo>(mForecastList);
 
-        testGetSameData(forecastGetter);
+        testGetSameData(forecastGetter, IForecastGetter.FORECAST_TYPE_DAILY);
+        List<WeatherInfo> newData = new ArrayList<WeatherInfo>(mForecastList);
+
+        assertEquals(initialData.size(), newData.size());
+
+        int size = initialData.size();
+        for (int index=0; index < size; index++) {
+            WeatherInfo a = initialData.get(index);
+            WeatherInfo b = newData.get(index);
+
+            assertEquals(a.getWeatherId(), b.getWeatherId());
+            assertEquals(a.getTime(), b.getTime());
+        }
+
+        initialData.clear();
+        initialData = null;
+
+        newData.clear();
+        newData = null;
+    }
+
+    public void test002GetAlreadyExistData3Hour() {
+        IForecastGetter forecastGetter = getForecastGetter();
+
+        testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_3HOUR);
+        List<WeatherInfo> initialData = new ArrayList<WeatherInfo>(mForecastList);
+
+        testGetSameData(forecastGetter, IForecastGetter.FORECAST_TYPE_3HOUR);
         List<WeatherInfo> newData = new ArrayList<WeatherInfo>(mForecastList);
 
         assertEquals(initialData.size(), newData.size());
@@ -69,15 +97,37 @@ public class ForecastTest extends InstrumentationTestCase {
         }
     }
 
+    public void test002GetAlreadyExistDataMixed() {
+        IForecastGetter forecastGetter = getForecastGetter();
+
+        testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_DAILY);
+        List<WeatherInfo> dailyData = new ArrayList<WeatherInfo>(mForecastList);
+
+        testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_3HOUR);
+        List<WeatherInfo> threeHourData = new ArrayList<WeatherInfo>(mForecastList);
+
+        assertFalse(dailyData.size() == threeHourData.size());
+
+        for (WeatherInfo daily : dailyData) {
+            assertEquals(IForecastGetter.FORECAST_TYPE_DAILY, daily.getForecastType());
+        }
+
+        for (WeatherInfo three : threeHourData) {
+            assertEquals(IForecastGetter.FORECAST_TYPE_3HOUR, three.getForecastType());
+        }
+    }
+
     // ---------------------------------------------------------------
 
-    private void testGetNewDataByGeoLocation(final IForecastGetter forecastGetter) {
+    private void testGetNewDataByGeoLocation(final IForecastGetter forecastGetter, final int type) {
         forecastGetter.setLocale(Locale.JAPAN);
 
         LatLng latLng = new LatLng(36.4, 138.27);
         forecastGetter.setLatLng(latLng);
 
         forecastGetter.setEnableWeatherIcon(true);
+
+        forecastGetter.setForecastType(type);
 
         mCountDownLatch = new CountDownLatch(1);
 
@@ -91,8 +141,11 @@ public class ForecastTest extends InstrumentationTestCase {
 
         assertNotNull(mForecastList);
 
-        int size = mForecastList.size();
-        assertEquals(7, size);
+        if (type == IForecastGetter.FORECAST_TYPE_DAILY) {
+            int size = mForecastList.size();
+            int expectSize = 7;
+            assertEquals(expectSize, size);
+        }
 
         for (WeatherInfo forecast : mForecastList) {
             Log.d(TAG, forecast.toString());
@@ -153,7 +206,7 @@ public class ForecastTest extends InstrumentationTestCase {
         }
     }
 
-    private void testGetSameData(final IForecastGetter forecastGetter) {
+    private void testGetSameData(final IForecastGetter forecastGetter, final int type) {
         mCountDownLatch = new CountDownLatch(1);
 
         forecastGetter.getForecast(mOnForecastGetListener);
@@ -166,8 +219,10 @@ public class ForecastTest extends InstrumentationTestCase {
 
         assertNotNull(mForecastList);
 
-        int size = mForecastList.size();
-        assertEquals(7, size);
+        if (type == IForecastGetter.FORECAST_TYPE_DAILY) {
+            int size = mForecastList.size();
+            assertEquals(7, size);
+        }
 
         for (WeatherInfo forecast : mForecastList) {
             Log.d(TAG, forecast.toString());
