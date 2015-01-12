@@ -43,13 +43,20 @@ public class ForecastTest extends InstrumentationTestCase {
     }
 
     public void test001GetNewDataByGeoLocation() {
+        Log.d(TAG, "+++ test001GetNewDataByGeoLocation() +++");
+
         IForecastGetter forecastGetter = getForecastGetter();
 
+        Log.d(TAG, "------ get daily forecast -----");
         testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_DAILY);
+
+        Log.d(TAG, "------ get forecast every 3hour -----");
         testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_3HOUR);
     }
 
     public void test002GetAlreadyExistData() {
+        Log.d(TAG, "+++ test002GetAlreadyExistData() +++");
+
         IForecastGetter forecastGetter = getForecastGetter();
 
         testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_DAILY);
@@ -77,6 +84,8 @@ public class ForecastTest extends InstrumentationTestCase {
     }
 
     public void test002GetAlreadyExistData3Hour() {
+        Log.d(TAG, "+++ test002GetAlreadyExistData3Hour() +++");
+
         IForecastGetter forecastGetter = getForecastGetter();
 
         testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_3HOUR);
@@ -98,6 +107,8 @@ public class ForecastTest extends InstrumentationTestCase {
     }
 
     public void test002GetAlreadyExistDataMixed() {
+        Log.d(TAG, "+++ test002GetAlreadyExistDataMixed() +++");
+
         IForecastGetter forecastGetter = getForecastGetter();
 
         testGetNewDataByGeoLocation(forecastGetter, IForecastGetter.FORECAST_TYPE_DAILY);

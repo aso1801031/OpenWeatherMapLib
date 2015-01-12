@@ -98,15 +98,17 @@ public class WeatherParser {
 
                 for (int i = 0; i < num; i++) {
                     JSONObject obj = listArray.getJSONObject(i);
-                    WeatherInfo info = parseWeather(obj);
+
+                    WeatherInfo info = new WeatherInfo();
+                    parseWeather(info, obj, false);
                     weathers.add(info);
                 }
             } else {
-                WeatherInfo info = parseWeather(rootObj);
-                if (info != null) {
-                    weathers = new ArrayList<WeatherInfo>();
-                    weathers.add(info);
-                }
+                WeatherInfo info = new WeatherInfo();
+                parseWeather(info, rootObj, false);
+
+                weathers = new ArrayList<WeatherInfo>();
+                weathers.add(info);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -114,7 +116,7 @@ public class WeatherParser {
         return weathers;
     }
 
-    public static List<WeatherInfo> parseForecast(String data) {
+    public static List<WeatherInfo> parseForecast(String data, final int type) {
         List<WeatherInfo> forecast = null;
         try {
             JSONObject rootObj = new JSONObject(data);
@@ -143,7 +145,13 @@ public class WeatherParser {
                     dailyForecast.setLatLng(locationInfo.getLatLng());
                     dailyForecast.setId(locationInfo.getId());
 
-                    parseForecast(dailyForecast, obj);
+                    if (type == IForecastGetter.FORECAST_TYPE_DAILY) {
+                        parseForecast(dailyForecast, obj);
+                    } else if (type == IForecastGetter.FORECAST_TYPE_3HOUR) {
+                        parseWeather(dailyForecast, obj, true);
+                    }
+                    dailyForecast.setForecastType(type);
+
                     forecast.add(dailyForecast);
                 }
             }
@@ -155,12 +163,10 @@ public class WeatherParser {
         return forecast;
     }
 
-    private static WeatherInfo parseWeather(JSONObject obj) {
-        WeatherInfo weather = new WeatherInfo();
-
+    private static void parseWeather(WeatherInfo info, JSONObject obj, final boolean isForecast) {
         try {
             // Parse city information
-            parseCityInfo(weather, obj);
+            parseCityInfo(info, obj);
 
             // Weather main information
             if (obj.has(KEY_MAIN)) {
@@ -168,43 +174,47 @@ public class WeatherParser {
 
                 if (mainObj.has(KEY_TEMP)) {
                     float currentTemp = (float) (mainObj.getDouble(KEY_TEMP));
-                    weather.setCurrentTemp(currentTemp);
+                    info.setCurrentTemp(currentTemp);
                 }
 
                 if (mainObj.has(KEY_TEMP_MIN)) {
                     float minTemp = (float) (mainObj.getDouble(KEY_TEMP_MIN));
-                    weather.setMinTemp(minTemp);
+                    info.setMinTemp(minTemp);
                 }
 
                 if (mainObj.has(KEY_TEMP_MAX)) {
                     float maxTemp = (float) (mainObj.getDouble(KEY_TEMP_MAX));
-                    weather.setMaxTemp(maxTemp);
+                    info.setMaxTemp(maxTemp);
                 }
 
                 if (mainObj.has(KEY_HUMIDITY)) {
                     int humidity = mainObj.getInt(KEY_HUMIDITY);
-                    weather.setHumidity(humidity);
+                    info.setHumidity(humidity);
                 }
 
                 if (mainObj.has(KEY_PRESSURE)) {
                     int pressure = mainObj.getInt(KEY_PRESSURE);
-                    weather.setPressure(pressure);
+                    info.setPressure(pressure);
                 }
             }
 
             // Data receiving time, unix time
-            long time = System.currentTimeMillis();
-            weather.setTime(time);
+            if (!isForecast) {
+                long time = System.currentTimeMillis();
+                info.setTime(time);
+            } else {
+                parseForecastDateTime(info, obj);
+            }
 
             // Weather
-            parseWeatherInfo(weather, obj);
+            parseWeatherInfo(info, obj);
 
             // rain
             if (obj.has(KEY_RAIN)) {
                 JSONObject rainObj = obj.getJSONObject(KEY_RAIN);
                 if (rainObj.has(KEY_RAIN_3H)) {
                     float rain = (float) rainObj.getDouble(KEY_RAIN_3H);
-                    weather.setRain(rain);
+                    info.setRain(rain);
                 }
             }
 
@@ -213,8 +223,8 @@ public class WeatherParser {
                 JSONObject snowObj = obj.getJSONObject(KEY_SHOW);
                 if (snowObj.has(KEY_SNOW_3H)) {
                     float snow = (float) snowObj.getDouble(KEY_SNOW_3H);
-                    weather.setRain(snow);
-                    weather.setSnow(true);
+                    info.setRain(snow);
+                    info.setSnow(true);
                 }
             }
 
@@ -223,12 +233,12 @@ public class WeatherParser {
                 JSONObject windObj = obj.getJSONObject(KEY_WIND);
                 if (windObj.has(KEY_WIND_SPEED)) {
                     float speed = (float) windObj.getDouble(KEY_WIND_SPEED);
-                    weather.setWindSpeed(speed);
+                    info.setWindSpeed(speed);
                 }
 
                 if (windObj.has(KEY_WIND_DEG)) {
                     int deg = windObj.getInt(KEY_WIND_DEG);
-                    weather.setWindDeg(deg);
+                    info.setWindDeg(deg);
                 }
             }
 
@@ -237,18 +247,15 @@ public class WeatherParser {
                 JSONObject cloudsObj = obj.getJSONObject(KEY_CLOUDS);
                 if (cloudsObj.has(KEY_CLOUDS_ALL)) {
                     int clouds = cloudsObj.getInt(KEY_CLOUDS_ALL);
-                    weather.setClouds(clouds);
+                    info.setClouds(clouds);
                 }
             }
-
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        Log.d(TAG, weather.toString());
-
-        return weather;
+        Log.d(TAG, info.toString());
     }
 
     private static void parseForecast(WeatherInfo forecast, JSONObject object) {
@@ -277,18 +284,7 @@ public class WeatherParser {
             }
 
             // Data receiving time, unix time
-            if (object.has(KEY_DT)) {
-                // received data's unit is sec, so convert unit to millisecond.
-                long time = object.getLong(KEY_DT) * 1000;
-                forecast.setTime(time);
-
-                TimeZone tz = TimeZone.getDefault();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd kk:mm");
-                sdf.setTimeZone(tz);
-                Date date = new Date(time);
-                String forecastDate = sdf.format(date);
-                forecast.setForecastDate(forecastDate);
-            }
+            parseForecastDateTime(forecast, object);
 
             // Weather
             parseWeatherInfo(forecast, object);
@@ -372,6 +368,25 @@ public class WeatherParser {
                 }
             }
 
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void parseForecastDateTime(WeatherInfo info, JSONObject object) {
+        try {
+            if (object.has(KEY_DT)) {
+                // received data's unit is sec, so convert unit to millisecond.
+                long time = object.getLong(KEY_DT) * 1000;
+                info.setTime(time);
+
+                TimeZone tz = TimeZone.getDefault();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd kk:mm");
+                sdf.setTimeZone(tz);
+                Date date = new Date(time);
+                String forecastDate = sdf.format(date);
+                info.setForecastDate(forecastDate);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

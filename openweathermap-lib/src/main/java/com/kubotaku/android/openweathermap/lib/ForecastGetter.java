@@ -268,11 +268,8 @@ public class ForecastGetter implements IForecastGetter {
                 String data = sb.toString();
 
                 // Parse Weather Forecast info form JSON format
-                forecast = WeatherParser.parseForecast(data);
+                forecast = WeatherParser.parseForecast(data, mForecastType);
                 for (WeatherInfo dailyForecast : forecast) {
-                    // set forecast type
-                    dailyForecast.setForecastType(mForecastType);
-
                     // Get weather icon from service.
                     if (mEnableWeatherIcon) {
                         Bitmap icon = WeatherIconGetter.getWeatherIcon(dailyForecast.getIconName(), mWeatherIconSize);
